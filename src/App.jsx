@@ -7,6 +7,7 @@ import { Authorized } from "./pages/Authorized.jsx";
 import { useEffect, useState } from "react";
 import { SignIn } from "./components/SignIn.jsx";
 import { getUserByEmail, getUserById } from "./services/Users.jsx";
+import { ProjectDetails } from "./components/ProjectDetails.jsx";
 
 export const App = () => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -97,6 +98,14 @@ export const App = () => {
 							element={
 								<Authorized authorized={authorized}>
 									<ProjectsList />
+								</Authorized>
+							}
+						/>
+						<Route 
+							path="/projects/:id"
+							element={
+								<Authorized authorized={authorized}>
+									<ProjectDetails />
 								</Authorized>
 							}
 						/>

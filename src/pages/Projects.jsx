@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./Projects.css";
-import { getAllProjects, getProjectByStatus } from "../components/getAllProjects.jsx";
+import { getAllProjects, getProjectByStatus } from "../services/getAllProjects.jsx";
 import { useNavigate } from "react-router-dom";
 
 export const ProjectsList = () => {
 	const [projects, setProjects] = useState([]);
 	const [selectedStatus, setSelectedStatus] = useState("");
-  const navigate = useNavigate()
+	const navigate = useNavigate();
 
-	useEffect(() => {
-		fetchProjects();
-	}, []);
+	// useEffect(() => {
+	// 	fetchProjects();
+	// });
 
-	const fetchProjects = () => {
+	const fetchProjects = useCallback(() => {
 		if (selectedStatus) {
 			getProjectByStatus(selectedStatus)
 				.then((data) => setProjects(data))
@@ -22,7 +22,7 @@ export const ProjectsList = () => {
 				.then((data) => setProjects(data))
 				.catch((error) => console.error("Error:", error));
 		}
-	};
+	}, [selectedStatus]);
 
 	const handleStatusFilter = (e) => {
 		setSelectedStatus(e.target.value);
@@ -30,11 +30,11 @@ export const ProjectsList = () => {
 
 	useEffect(() => {
 		fetchProjects();
-	}, [selectedStatus]);
+	}, [selectedStatus, fetchProjects]);
 
-  const handleProjectClick = (projectId) => {
-    navigate(`/projects/${projectId}`)
-  }
+	const handleProjectClick = (projectId) => {
+		navigate(`/projects/${projectId}`);
+	};
 
 	return (
 		<div className="projects-container">
@@ -46,15 +46,12 @@ export const ProjectsList = () => {
 					<option value="1">Completed</option>
 					<option value="2">Cancelled</option>
 					<option value="3">Ongoing</option>
+					<option value="4">Planning Stage</option>
 				</select>
 			</div>
 			<div className="projects-grid">
 				{projects.map((project) => (
-					<div 
-            className="project-card" 
-            key={project.id}
-            onClick={() => handleProjectClick(project.id)}
-          >
+					<div className="project-card" key={project.id} onClick={() => handleProjectClick(project.id)}>
 						<h3>Project #{project.id}</h3>
 						<img src={project.imageURL} alt={project.title} />
 						<p>{project.title}</p>
