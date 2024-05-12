@@ -3,18 +3,37 @@ import "./ProjectDetails.css";
 import { useCallback, useEffect, useState } from "react";
 import { getProjectById, updateProject, deleteProject } from "../services/getAllProjects.jsx";
 import { SuppliesList } from "./SuppliesList.jsx";
+import { getAllLocations } from "../services/Locations.js";
 
 export const ProjectDetails = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
-	const [project, setProject] = useState(null);
-	const [status, setStatus] = useState("");
+	const [project, setProject] = useState({});
+	const [roomLocations, setRoomLocations] = useState([]);
+	const [initialFormState, setInitialFormState] = useState({});
+	const [isFormDirty, setIsFormDirty] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+
+	useEffect(() => {
+		if (Object.keys(project).length > 0) {
+			setIsFormDirty(JSON.stringify(project) !== initialFormState);
+		}
+	}, [project, initialFormState]);
+
+	const fetchLocations = useCallback(async () => {
+		try {
+			const data = await getAllLocations();
+			setRoomLocations(data);
+		} catch (error) {
+			console.error("Error fetching room locations at fetchLocations in ProjectDetails.jsx:", error);
+		}
+	}, []);
 
 	const fetchProject = useCallback(async () => {
 		try {
 			const data = await getProjectById(id);
 			setProject(data);
-			setStatus(data.status);
+			setInitialFormState(JSON.stringify(data));
 		} catch (error) {
 			console.error("Error fetching project at fetchProject in ProjectDetails.jsx:", error);
 		}
@@ -22,21 +41,36 @@ export const ProjectDetails = () => {
 
 	useEffect(() => {
 		fetchProject();
-	}, [fetchProject]);
+		fetchLocations();
+	}, [fetchProject, fetchLocations]);
 
 	const handleChange = (e) => {
 		setProject({ ...project, [e.target.name]: e.target.value });
 	};
 
 	const handleStatusChange = (e) => {
-		setStatus(e.target.value);
+		setProject({ ...project, statusId: Number(e.target.value) });
+	};
+
+	const handleSuppliesChange = (updatedSupplies) => {
+		setProject({
+			...project,
+			supplies: updatedSupplies,
+		});
 	};
 
 	const handleSave = async () => {
+		setIsLoading(true);
+
 		try {
-			await updateProject(id, { ...project, status });
+			await updateProject(id, { ...project });
+			fetchProject();
 		} catch (error) {
 			console.error("Error updating project at handleSave:", error);
+		} finally {
+			setTimeout(() => {
+				setIsLoading(false);
+			}, 1000);
 		}
 	};
 
@@ -82,31 +116,44 @@ export const ProjectDetails = () => {
 					</label>
 					<label>
 						Location:
-						<input type="text" name="location" value={project.location} onChange={handleChange} />
+						<select name="locationId" onChange={handleChange}>
+							{roomLocations.map((location, index) => (
+								<option key={index} value={location.id} selected={project.locationId === location.id}>
+									{location.roomName}
+								</option>
+							))}
+						</select>
 					</label>
 				</div>
 			</div>
 			<div className="supplies-info">
 				<h2>Supplies Needed</h2>
-				<SuppliesList projectId={project.id} />
+				<SuppliesList project={project} onSuppliesChange={handleSuppliesChange} />
+				{isFormDirty && <span className="changes-made">Changes Made - Please Click Save</span>}
 			</div>
 			<div className="project-status">
 				<h3>Status:</h3>
 				<label>
-					<input type="radio" value="Ongoing" checked={status === "Ongoing"} onChange={handleStatusChange} />
+					<input type="radio" value="3" checked={Number(project.statusId) === 3} onChange={handleStatusChange} />
 					Ongoing
 				</label>
 				<label>
-					<input type="radio" value="Completed" checked={status === "Completed"} onChange={handleStatusChange} />
+					<input type="radio" value="1" checked={Number(project.statusId) === 1} onChange={handleStatusChange} />
 					Completed
 				</label>
 				<label>
-					<input type="radio" value="Cancelled" checked={status === "Cancelled"} onChange={handleStatusChange} />
+					<input type="radio" value="2" checked={Number(project.statusId) === 2} onChange={handleStatusChange} />
 					Cancelled
+				</label>
+				<label>
+					<input type="radio" value="4" checked={Number(project.statusId) === 4} onChange={handleStatusChange} />
+					Planning Stage
 				</label>
 			</div>
 			<div className="project-actions">
-				<button onClick={handleSave}>Save Changes</button>
+				<button onClick={handleSave} disabled={isLoading}>
+					{isLoading ? "Saving..." : "Save Changes"}
+				</button>
 				<button onClick={() => navigate("/projects")}>Projects Menu</button>
 				<button onClick={handleDelete}>Delete Project</button>
 			</div>

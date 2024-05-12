@@ -87,3 +87,8 @@
 .project-actions button:last-child {
   background-color: #dc3545;
 }
+
+.project-actions button:disabled {
+  cursor: not-allowed;
+  background-color: #7d7d7d;
+}

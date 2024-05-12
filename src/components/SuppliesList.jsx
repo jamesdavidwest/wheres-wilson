@@ -1,76 +1,111 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import "./SuppliesList.css";
-import { createSupply, getSuppliesByProjectId, getSupplyByName, updateSupply } from "../services/Supplies.jsx";
+import { getSupplyByName } from "../services/Supplies.jsx";
 import PropTypes from "prop-types";
 
-export const SuppliesList = ({ projectId }) => {
-	const [supplies, setSupplies] = useState([]);
+export const SuppliesList = ({ project, onSuppliesChange }) => {
 	const [newSupplyName, setNewSupplyName] = useState("");
-	const [newSupplyQuantity, SetNewSupplyQuantity] = useState(1);
+	const [newSupplyQuantity, setNewSupplyQuantity] = useState(1);
 	const [newSupplyPrice, setNewSupplyPrice] = useState(0);
 
-	const fetchSupplies = useCallback(async () => {
-		try {
-			const data = await getSuppliesByProjectId(projectId);
-			setSupplies(data);
-		} catch (error) {
-			console.error("Error fetching supplies at fetchSupplies:", error);
-		}
-	}, [projectId]);
+	const handleNewSupplyPriceLookup = async (e) => {
+		const name = e.target.value;
 
-	useEffect(() => {
-		fetchSupplies();
-	}, [fetchSupplies]);
-
-	const handleAddNewSupply = async () => {
 		try {
-			let supply = await getSupplyByName(newSupplyName);
-			if (!supply) {
-				supply = await createSupply({ name: newSupplyName, costEach: 0 });
+			const supply = await getSupplyByName(name);
+			if (supply) {
+				setNewSupplyPrice(supply.costEach.toFixed(2));
+			} else {
+				setNewSupplyPrice("");
 			}
-			await updateSupply(supply.id, { projectId, quantity: newSupplyQuantity });
-			setNewSupplyName("");
-			SetNewSupplyQuantity(1);
-			setNewSupplyPrice(0);
-			fetchSupplies();
 		} catch (error) {
-			console.error("Error adding new supply at handleAddNewSupply:", error);
+			console.error("Error fetching supply by name at handleNewSupplyPriceLookup:", error);
 		}
 	};
 
-	const totalCost = supplies.reduce((total, supply) => total + supply.costEach * supply.quantity, 0);
+	const handleAddNewSupply = () => {
+		if (!newSupplyName) {
+			console.error("Missing supply name");
+
+			return;
+		}
+
+		if (!newSupplyQuantity) {
+			console.error("Missing supply quantity");
+
+			return;
+		}
+
+		if (!newSupplyPrice) {
+			console.error("Missing price");
+
+			return;
+		}
+
+		const newSupply = {
+			id: Date.now(),
+			name: newSupplyName,
+			quantity: newSupplyQuantity,
+			costEach: parseFloat(newSupplyPrice),
+		};
+
+		onSuppliesChange([...project.supplies, newSupply]);
+		setNewSupplyName("");
+		setNewSupplyQuantity(1);
+		setNewSupplyPrice("");
+	};
+
+	const handleDeleteSupply = (supply) => {
+		const newSupplies = project.supplies.filter(({ id }) => id !== supply.id);
+
+		onSuppliesChange(newSupplies);
+	};
+
+	const totalCost = project?.supplies?.reduce((total, supply) => total + (supply.costEach || 0) * (supply.quantity || 0), 0) ?? 0;
 
 	return (
 		<div className="supplies-list">
-			<h3>Supplies</h3>
-			<table>
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Quantity</th>
-						<th>Price</th>
-						<th>Total</th>
-					</tr>
-				</thead>
-				<tbody>
-					{supplies.map((supply) => (
-						<tr key={supply.id}>
-							<td>{supply.name}</td>
-							<td>{supply.quantity}</td>
-							<td>${supply.costEach.toFixed(2)}</td>
-							<td>${(supply.costEach * supply.quantity).toFixed(2)}</td>
+			{project?.supplies?.length > 0 && (
+				<table>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Quantity</th>
+							<th>Price</th>
+							<th>Total</th>
+							<th></th>
 						</tr>
-					))}
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						{project?.supplies?.map((supply, index) => (
+							<tr key={index}>
+								<td>{supply.name}</td>
+								<td>{supply.quantity || 1}</td>
+								<td>${(supply.costEach || 0).toFixed(2)}</td>
+								<td>${((supply.costEach || 0) * (supply.quantity || 0)).toFixed(2)}</td>
+								<td>
+									<button onClick={() => handleDeleteSupply(supply)}>Delete</button>
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			)}
+			{!project?.supplies?.length && <div>Add some supplies!</div>}
 			<div className="add-new-item">
-				<input type="text" placeholder="Item Name" value={newSupplyName} onChange={(e) => setNewSupplyName(e.target.value)} />
+				<input
+					type="text"
+					placeholder="Item Name"
+					value={newSupplyName}
+					onChange={(e) => setNewSupplyName(e.target.value)}
+					onBlur={handleNewSupplyPriceLookup}
+				/>
 				<input
 					type="number"
 					min="1"
 					placeholder="Quantity"
 					value={newSupplyQuantity}
-					onChange={(e) => SetNewSupplyQuantity(parseInt(e.target.value))}
+					onChange={(e) => setNewSupplyQuantity(parseInt(e.target.value))}
 				/>
 				<input
 					type="number"
@@ -78,10 +113,13 @@ export const SuppliesList = ({ projectId }) => {
 					step="0.01"
 					placeholder="Price Per Unit"
 					value={newSupplyPrice}
-					onChange={(e) => SetNewSupplyQuantity(parseFloat(e.target.value))}
+					onChange={(e) => setNewSupplyPrice(e.target.value)}
 				/>
+				<br />
+				<br />
 				<button onClick={handleAddNewSupply}>Add New Item</button>
 			</div>
+
 			<div className="total-cost">
 				<h4>Total Cost: ${totalCost.toFixed(2)}</h4>
 			</div>
@@ -90,5 +128,6 @@ export const SuppliesList = ({ projectId }) => {
 };
 
 SuppliesList.propTypes = {
-	projectId: PropTypes.number.isRequired,
+	project: PropTypes.object.isRequired,
+	onSuppliesChange: PropTypes.func.isRequired,
 };

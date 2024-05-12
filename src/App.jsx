@@ -6,34 +6,26 @@ import { LandingPage } from "./pages/LandingPage.jsx";
 import { Authorized } from "./pages/Authorized.jsx";
 import { useEffect, useState } from "react";
 import { SignIn } from "./components/SignIn.jsx";
-import { getUserByEmail, getUserById } from "./services/Users.jsx";
+import { getUserByEmail } from "./services/Users.jsx";
 import { ProjectDetails } from "./components/ProjectDetails.jsx";
 
-export const App = () => {
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
-	const [userName, setUserName] = useState("");
-	const [authorized, setAuthorized] = useState(false);
+export const App = ({ loggedInUser }) => {
+	const [isLoggedIn, setIsLoggedIn] = useState(loggedInUser?.id ? true : false);
+	const [userName, setUserName] = useState(loggedInUser?.name || "");
 
 	useEffect(() => {
-		const checkAuth = async () => {
-			const wilsonUser = localStorage.getItem("wilson_user");
-			if (wilsonUser) {
-				const user = JSON.parse(wilsonUser);
-				try {
-					const userData = await getUserById(user.id);
-					if (userData) {
-						setAuthorized(true);
-					} else {
-						localStorage.removeItem("wilson_user");
-					}
-				} catch (error) {
-					console.error("Error fetching user data:", error);
-				}
+		const checkUserData = () => {
+			if (loggedInUser?.id) {
+				setUserName(loggedInUser.name);
+				setIsLoggedIn(true);
+			} else {
+				setIsLoggedIn(false);
+				setUserName("");
 			}
 		};
 
-		checkAuth();
-	}, []);
+		checkUserData();
+	}, [loggedInUser]);
 
 	const handleLogout = () => {
 		localStorage.removeItem("wilson_user");
@@ -46,7 +38,6 @@ export const App = () => {
 			const user = await getUserByEmail(email);
 			if (user) {
 				localStorage.setItem("wilson_user", JSON.stringify(user));
-				setAuthorized(true);
 				setIsLoggedIn(true);
 				setUserName(user.name);
 				return true;
@@ -59,29 +50,6 @@ export const App = () => {
 			return false;
 		}
 	};
-
-	useEffect(() => {
-		const checkUserData = () => {
-			const userData = localStorage.getItem("wilson_user");
-			if (userData) {
-				const user = JSON.parse(userData);
-				setUserName(user.name);
-				setIsLoggedIn(true);
-				setAuthorized(true);
-			} else {
-				setIsLoggedIn(false);
-				setUserName("");
-				setAuthorized(false);
-			}
-		};
-
-		checkUserData();
-
-		window.addEventListener("storage", checkUserData);
-		return () => {
-			window.removeEventListener("storage", checkUserData);
-		};
-	}, []);
 
 	return (
 		<>
@@ -96,15 +64,15 @@ export const App = () => {
 						<Route
 							path="/projects"
 							element={
-								<Authorized authorized={authorized}>
+								<Authorized authorized={isLoggedIn}>
 									<ProjectsList />
 								</Authorized>
 							}
 						/>
-						<Route 
+						<Route
 							path="/projects/:id"
 							element={
-								<Authorized authorized={authorized}>
+								<Authorized authorized={isLoggedIn}>
 									<ProjectDetails />
 								</Authorized>
 							}
@@ -112,7 +80,7 @@ export const App = () => {
 						<Route
 							path="/profile"
 							element={
-								<Authorized authorized={authorized}>
+								<Authorized authorized={isLoggedIn}>
 									<UserProfile />
 								</Authorized>
 							}
@@ -126,3 +94,5 @@ export const App = () => {
 		</>
 	);
 };
+
+// TODO: Prop validation
