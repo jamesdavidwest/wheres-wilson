@@ -7,8 +7,9 @@ import { Authorized } from "./pages/Authorized.jsx";
 import { useEffect, useState } from "react";
 import { SignIn } from "./components/SignIn.jsx";
 import { getUserByEmail } from "./services/Users.jsx";
-import { ProjectDetails } from "./components/ProjectDetails.jsx";
-import { CreateProject } from "./components/CreateProject.jsx";
+// import { ProjectDetails } from "./components/ProjectDetails.jsx";
+// import { CreateProject } from "./components/CreateProject.jsx";
+import { ProjectForm } from "./components/ProjectForm.jsx";
 import { CreateAccount } from "./components/CreateAccount.jsx";
 import PropTypes from "prop-types";
 
@@ -78,7 +79,7 @@ export const App = ({ userFromStorage }) => {
 							path="/projects/:id"
 							element={
 								<Authorized authorized={isLoggedIn}>
-									<ProjectDetails />
+									<ProjectForm />
 								</Authorized>
 							}
 						/>
@@ -98,7 +99,7 @@ export const App = ({ userFromStorage }) => {
 							path="/projects/new"
 							element={
 								<Authorized authorized={isLoggedIn}>
-									<CreateProject loggedInUser={loggedInUser} />
+									<ProjectForm loggedInUser={loggedInUser} />
 								</Authorized>
 							}
 						/>

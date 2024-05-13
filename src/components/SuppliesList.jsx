@@ -44,7 +44,7 @@ export const SuppliesList = ({ project, onSuppliesChange }) => {
 		}
 
 		const newSupply = {
-			id: Date.now(),
+			id: crypto.randomUUID(),
 			name: newSupplyName,
 			quantity: newSupplyQuantity,
 			costEach: parseFloat(newSupplyPrice),

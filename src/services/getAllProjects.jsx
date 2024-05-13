@@ -21,6 +21,7 @@ export const getProjectByLocation = (locationId) => {
 };
 
 export const updateProject = (projectId, updatedProject) => {
+	console.log(updatedProject);
 	return fetch(`${API_URL}/${projectId}`, {
 		method: "PUT",
 		headers: {
