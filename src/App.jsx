@@ -8,8 +8,12 @@ import { useEffect, useState } from "react";
 import { SignIn } from "./components/SignIn.jsx";
 import { getUserByEmail } from "./services/Users.jsx";
 import { ProjectDetails } from "./components/ProjectDetails.jsx";
+import { CreateProject } from "./components/CreateProject.jsx";
+import { CreateAccount } from "./components/CreateAccount.jsx";
+import PropTypes from "prop-types";
 
-export const App = ({ loggedInUser }) => {
+export const App = ({ userFromStorage }) => {
+	const [loggedInUser, setLoggedInUser] = useState(userFromStorage || {});
 	const [isLoggedIn, setIsLoggedIn] = useState(loggedInUser?.id ? true : false);
 	const [userName, setUserName] = useState(loggedInUser?.name || "");
 
@@ -40,6 +44,7 @@ export const App = ({ loggedInUser }) => {
 				localStorage.setItem("wilson_user", JSON.stringify(user));
 				setIsLoggedIn(true);
 				setUserName(user.name);
+				setLoggedInUser(user);
 				return true;
 			} else {
 				alert("Invalid email from getUserByEmail. Please try again.");
@@ -65,7 +70,7 @@ export const App = ({ loggedInUser }) => {
 							path="/projects"
 							element={
 								<Authorized authorized={isLoggedIn}>
-									<ProjectsList />
+									<ProjectsList loggedInUser={loggedInUser} />
 								</Authorized>
 							}
 						/>
@@ -86,8 +91,17 @@ export const App = ({ loggedInUser }) => {
 							}
 						/>
 						<Route path="/signin" element={<SignIn onSubmit={handleSignIn} />} />
-						<Route path="/signup" element={<div>Sign Up Page</div>} />
+
 						<Route path="/logout" element={<LandingPage />} />
+						<Route path="/signup" element={<CreateAccount onSignIn={handleSignIn} />} />
+						<Route
+							path="/projects/new"
+							element={
+								<Authorized authorized={isLoggedIn}>
+									<CreateProject loggedInUser={loggedInUser} />
+								</Authorized>
+							}
+						/>
 					</Routes>
 				</div>
 			</Router>
@@ -95,4 +109,6 @@ export const App = ({ loggedInUser }) => {
 	);
 };
 
-// TODO: Prop validation
+App.propTypes = {
+	userFromStorage: PropTypes.object.isRequired,
+};

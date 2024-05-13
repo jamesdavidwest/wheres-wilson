@@ -13,6 +13,7 @@ export const SuppliesList = ({ project, onSuppliesChange }) => {
 
 		try {
 			const supply = await getSupplyByName(name);
+
 			if (supply) {
 				setNewSupplyPrice(supply.costEach.toFixed(2));
 			} else {
@@ -63,6 +64,16 @@ export const SuppliesList = ({ project, onSuppliesChange }) => {
 
 	const totalCost = project?.supplies?.reduce((total, supply) => total + (supply.costEach || 0) * (supply.quantity || 0), 0) ?? 0;
 
+	const handleSupplyQuantity = (e) => {
+		const { value } = e.target;
+
+		if (value) {
+			setNewSupplyQuantity(parseInt(value));
+		} else {
+			setNewSupplyQuantity("");
+		}
+	};
+
 	return (
 		<div className="supplies-list">
 			{project?.supplies?.length > 0 && (
@@ -96,21 +107,17 @@ export const SuppliesList = ({ project, onSuppliesChange }) => {
 				<input
 					type="text"
 					placeholder="Item Name"
+					name="newSupplyName"
 					value={newSupplyName}
 					onChange={(e) => setNewSupplyName(e.target.value)}
 					onBlur={handleNewSupplyPriceLookup}
 				/>
-				<input
-					type="number"
-					min="1"
-					placeholder="Quantity"
-					value={newSupplyQuantity}
-					onChange={(e) => setNewSupplyQuantity(parseInt(e.target.value))}
-				/>
+				<input type="number" min="1" name="Quantity" placeholder="Quantity" value={newSupplyQuantity} onChange={handleSupplyQuantity} />
 				<input
 					type="number"
 					min="0.01"
 					step="0.01"
+					name="Price Per Unit"
 					placeholder="Price Per Unit"
 					value={newSupplyPrice}
 					onChange={(e) => setNewSupplyPrice(e.target.value)}

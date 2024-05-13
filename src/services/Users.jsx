@@ -18,3 +18,13 @@ export const getUserByEmail = (email) => {
 		.then((res) => res.json())
 		.then((users) => users[0]);
 };
+
+export const createUser = (newUser) => {
+	return fetch(`${API_URL}`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(newUser),
+	}).then((res) => res.json());
+};

@@ -8,7 +8,18 @@ import { getAllLocations } from "../services/Locations.js";
 export const ProjectDetails = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
-	const [project, setProject] = useState({});
+	const [project, setProject] = useState({
+		id: "",
+		title: "",
+		description: "",
+		startDate: "",
+		endDate: "",
+		imageURL: "",
+		locationId: "",
+		supplies: [],
+		statusId: 3,
+	});
+
 	const [roomLocations, setRoomLocations] = useState([]);
 	const [initialFormState, setInitialFormState] = useState({});
 	const [isFormDirty, setIsFormDirty] = useState(false);
@@ -32,7 +43,13 @@ export const ProjectDetails = () => {
 	const fetchProject = useCallback(async () => {
 		try {
 			const data = await getProjectById(id);
-			setProject(data);
+			// console.log("Fetched project data:", data);
+			setProject(
+				{ 
+					...data, 
+					locationId: data.locationId || "",
+				}
+	);
 			setInitialFormState(JSON.stringify(data));
 		} catch (error) {
 			console.error("Error fetching project at fetchProject in ProjectDetails.jsx:", error);
@@ -116,9 +133,9 @@ export const ProjectDetails = () => {
 					</label>
 					<label>
 						Location:
-						<select name="locationId" onChange={handleChange}>
-							{roomLocations.map((location, index) => (
-								<option key={index} value={location.id} selected={project.locationId === location.id}>
+						<select name="locationId" value={project.locationId} onChange={handleChange}>
+							{roomLocations.map((location) => (
+								<option key={location.id} value={location.id}>
 									{location.roomName}
 								</option>
 							))}
@@ -134,19 +151,19 @@ export const ProjectDetails = () => {
 			<div className="project-status">
 				<h3>Status:</h3>
 				<label>
-					<input type="radio" value="3" checked={Number(project.statusId) === 3} onChange={handleStatusChange} />
+					<input type="radio" value="3" name="projectStatus" checked={Number(project.statusId) === 3} onChange={handleStatusChange} />
 					Ongoing
 				</label>
 				<label>
-					<input type="radio" value="1" checked={Number(project.statusId) === 1} onChange={handleStatusChange} />
+					<input type="radio" value="1" name="projectStatus" checked={Number(project.statusId) === 1} onChange={handleStatusChange} />
 					Completed
 				</label>
 				<label>
-					<input type="radio" value="2" checked={Number(project.statusId) === 2} onChange={handleStatusChange} />
+					<input type="radio" value="2" name="projectStatus" checked={Number(project.statusId) === 2} onChange={handleStatusChange} />
 					Cancelled
 				</label>
 				<label>
-					<input type="radio" value="4" checked={Number(project.statusId) === 4} onChange={handleStatusChange} />
+					<input type="radio" value="4" name="projectStatus" checked={Number(project.statusId) === 4} onChange={handleStatusChange} />
 					Planning Stage
 				</label>
 			</div>
