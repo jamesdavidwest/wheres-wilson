@@ -1,28 +1,28 @@
+/* SuppliesList.css */
 .supplies-list {
   margin-top: 20px;
 }
 
-.supplies-list h3 {
+.supplies-list h4 {
   margin-bottom: 10px;
 }
 
 .supplies-list table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.supplies-list th,
-.supplies-list td {
-  padding: 8px;
-  text-align: left;
-  border: 1px solid #ddd;
-  color: black;
-}
-
-.supplies-list th {
-  background-color: #f2f2f2;
+  margin-bottom: 20px;
 }
 
 .supplies-list input[type="number"] {
-  width: 60px;
+  width: 100%;
+}
+
+.add-new-item {
+  margin-bottom: 20px;
+}
+
+.add-new-item .form-group {
+  margin-bottom: 10px;
+}
+
+.total-cost {
+  text-align: right;
 }

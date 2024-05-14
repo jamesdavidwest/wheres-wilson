@@ -4,6 +4,7 @@ import { getProjectsByUserId, getProjectByStatus } from "../services/getAllProje
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { getAllProjectStatuses } from "../services/ProjectStatus.jsx";
+import { Container, Row, Col, Button, Form } from "react-bootstrap";
 
 export const ProjectsList = ({ loggedInUser }) => {
 	const [projects, setProjects] = useState([]);
@@ -35,19 +36,18 @@ export const ProjectsList = ({ loggedInUser }) => {
 
 	const fetchProjects = useCallback(() => {
 		if (loggedInUser && loggedInUser.id) {
-			const projectFetch = selectedStatus 
-				? getProjectByStatus(selectedStatus) 
-				: getProjectsByUserId(loggedInUser.id);
+			const projectFetch = selectedStatus ? getProjectByStatus(selectedStatus) : getProjectsByUserId(loggedInUser.id);
 
-				projectFetch.then((data) => {
+			projectFetch
+				.then((data) => {
 					const userProjects = data.filter((project) => project.userId === loggedInUser.id);
 					setProjects(userProjects);
 				})
-				.catch((error) => console.error(`Error at fetchProjects ${selectedStatus ? 'getProjectByStatus' : 'getProjectsByUserId'}:`, error));
+				.catch((error) => console.error(`Error at fetchProjects ${selectedStatus ? "getProjectByStatus" : "getProjectsByUserId"}:`, error));
 		} else {
 			setProjects([]);
 		}
-	}, [selectedStatus, loggedInUser]); 
+	}, [selectedStatus, loggedInUser]);
 
 	const handleStatusFilter = (e) => {
 		setSelectedStatus(e.target.value);
@@ -55,7 +55,7 @@ export const ProjectsList = ({ loggedInUser }) => {
 
 	useEffect(() => {
 		// console.log(loggedInUser);
-		fetchProjects()
+		fetchProjects();
 	}, [selectedStatus, fetchProjects, loggedInUser]);
 
 	useEffect(() => {
@@ -77,19 +77,21 @@ export const ProjectsList = ({ loggedInUser }) => {
 	};
 
 	return (
-		<div className="projects-container">
-			<h1>Welcome to your Dashboard!</h1>
-			<div className="projects-header">
-				<button onClick={handlesCreateProject}>Create New Project</button>
-				<select value={selectedStatus} onChange={handleStatusFilter}>
+		<Container className="projects-container">
+			<h1 className="projects-header">Projects Dashboard</h1>
+			<div className="projects-create-status">
+				<Button variant="primary" size="sm" onClick={handlesCreateProject}>
+					Create New Project
+				</Button>
+				<Form.Select value={selectedStatus} onChange={handleStatusFilter} size="sm">
 					<option value="">All Projects</option>
 					<option value="1">Completed</option>
 					<option value="2">Cancelled</option>
 					<option value="3">Ongoing</option>
 					<option value="4">Planning Stage</option>
-				</select>
+				</Form.Select>
 			</div>
-			<div className="projects-grid">
+			<Row className="projects-grid">
 				{projects.map((project) => {
 					const status = projectStatuses.find((status) => status.id === project.statusId);
 					const statusName = status ? status.name : "Unknown";
@@ -102,25 +104,29 @@ export const ProjectsList = ({ loggedInUser }) => {
 
 					const endDateString = project.endDate
 						? new Date(project.endDate).toLocaleDateString("en-US", {
-							year: "2-digit",
-							month: "numeric",
-							day: "numeric",
+								year: "2-digit",
+								month: "numeric",
+								day: "numeric",
 						})
 						: "TBD";
 
 					return (
-						<div className="project-card" key={project.id} onClick={() => handleProjectClick(project.id)}>
-							<h3>Project #{project.id}</h3>
-							<img src={project.imageURL} alt={project.title} />
-							<p>{project.title}</p>
-							<p>Start Date: {startDateString}</p>
-							<p>End Date: {endDateString}</p>
-							<p>Status: {statusName}</p>
-						</div>
+						<Col key={project.id} xs={12} sm={6} md={4} lg={3}>
+							<div className="project-card" onClick={() => handleProjectClick(project.id)}>
+								<img src={project.imageURL} alt={project.title} className="project-card-img" />
+								<h3>Project #{project.id}</h3>
+								<p>
+									<b>{project.title}</b>
+								</p>
+								<p>Started on {startDateString}</p>
+								<p>Ended on {endDateString}</p>
+								<p>Status: {statusName}</p>
+							</div>
+						</Col>
 					);
 				})}
-			</div>
-		</div>
+			</Row>
+		</Container>
 	);
 };
 

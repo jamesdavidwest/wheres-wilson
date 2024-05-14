@@ -1,45 +1,20 @@
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #333;
-  padding: 10px 20px;
-  max-width: 100%; /* Ensure the NavBar doesn't exceed the app width */
-}
-
+/* NavBar.css */
 .navbar-logo {
-  display: flex;
-  align-items: center;
-}
-
-.navbar-logo img {
   width: 40px;
   height: 40px;
   margin-right: 10px;
 }
 
-.navbar-logo a {
-  color: white;
-  font-size: 18px; /* Adjust the font size as needed */
-  text-decoration: none;
-  font-weight: bold; /* Make the title bold */
+.navbar-nav .nav-link {
+  font-size: 18px;
 }
 
 .navbar-greeting {
   color: white;
-  font-size: 18px; /* Adjust the font size as needed */
-  text-align: center;
-  flex-grow: 1; /* Allow the greeting to grow and center itself */
+  font-size: 18px;
+ 
 }
 
-.navbar-links {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-}
-
-.navbar-links a {
-  color: white;
-  font-size: 18px; /* Adjust the font size as needed */
-  text-decoration: none;
+.me-auto {
+  text-align: right;
 }

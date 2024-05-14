@@ -1,4 +1,5 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import PropTypes from "prop-types";
 import { NavBar } from "./components/NavBar.jsx";
 import { ProjectsList } from "./pages/Projects.jsx";
 import { UserProfile } from "./pages/UserProfile.jsx";
@@ -11,7 +12,6 @@ import { getUserByEmail } from "./services/Users.jsx";
 // import { CreateProject } from "./components/CreateProject.jsx";
 import { ProjectForm } from "./components/ProjectForm.jsx";
 import { CreateAccount } from "./components/CreateAccount.jsx";
-import PropTypes from "prop-types";
 
 export const App = ({ userFromStorage }) => {
 	const [loggedInUser, setLoggedInUser] = useState(userFromStorage || {});
@@ -111,5 +111,5 @@ export const App = ({ userFromStorage }) => {
 };
 
 App.propTypes = {
-	userFromStorage: PropTypes.object.isRequired,
+	userFromStorage: PropTypes.object,
 };

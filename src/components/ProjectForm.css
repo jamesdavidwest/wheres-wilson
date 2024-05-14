@@ -1,0 +1,59 @@
+/* ProjectForm.css */
+.project-form {
+	padding: 20px;
+}
+
+.project-form-header {
+	font-weight: bold;
+	margin-bottom: 30px;
+}
+
+.project-image-card {
+	margin-bottom: 20px;
+}
+
+.project-image-container {
+	position: relative;
+	height: 0;
+	padding-bottom: 100%; /* Adjust this value based on the desired height */
+	overflow: hidden;
+}
+
+.project-image {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	height: 100%;
+	width: auto;
+	object-fit: contain;
+}
+
+.project-details {
+	font-weight: bold;
+}
+
+.project-details-card {
+	padding: 4px;
+}
+
+.project-image-card {
+	margin-bottom: 20px;
+}
+
+.upload-button {
+	width: 100%;
+}
+
+.changes-made {
+	display: inline-block;
+	margin-top: 10px;
+	padding: 5px 10px;
+	background-color: #ffc107;
+	color: #212529;
+	border-radius: 4px;
+}
+
+.text-right {
+	text-align: right;
+}

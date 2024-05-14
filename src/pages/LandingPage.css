@@ -1,11 +1,12 @@
+/* LandingPage.css */
 .landing-page {
   text-align: center;
-  background-color: #fff;
+  background-color: #d39d6d; /* Add a white background color to the content area */
   padding: 20px;
 }
 
 .landing-page-content {
-  max-width: 800px;
+  max-width: 100%; /* Adjust the max-width to match the app width */
   margin: 0 auto;
 }
 

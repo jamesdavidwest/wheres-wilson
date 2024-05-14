@@ -38,22 +38,22 @@ export const UserProfile = () => {
 
 	return (
 		<div className="user-profile">
-			<h1>Welcome to your Profile!</h1>
+			<h1>Where&#39;s Wilson? User Profile</h1>
 			<div className="profile-form">
-				<label>
-					Name:
+				<label className="profile-font">
+					Name
 					<input type="text" value={name} onChange={(e) => setName(e.target.value)} />
 				</label>
-				<label>
-					Email:
+				<label className="profile-font">
+					Email
 					<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
 				</label>
-				<label>
-					Phone:
+				<label className="profile-font">
+					Phone
 					<input type="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
 				</label>
-				<label>
-					Address:
+				<label className="profile-font">
+					Address
 					<input type="address" value={address} onChange={(e) => setAddress(e.target.value)} />
 				</label>
 				<button onClick={handleSaveChanges}>Save Changes</button>

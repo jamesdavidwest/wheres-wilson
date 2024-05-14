@@ -1,0 +1,31 @@
+/* SignIn.css */
+.signin-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: calc(100vh - 56px);
+	padding: 20px;
+}
+
+.signin-card {
+	width: 100%;
+	max-width: 400px;
+	padding: 20px;
+	background-color: #fff;
+	border-radius: 5px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.signin-card-form {
+	margin-bottom: 20px;
+}
+
+.signin-card-footer {
+	display: flex;
+	justify-content: end;
+}
+
+.signin-card h2 {
+	margin-bottom: 20px;
+	text-align: center;
+}
